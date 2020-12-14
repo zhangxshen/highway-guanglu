@@ -1,0 +1,448 @@
+import pandas as pd
+
+
+guanglu = pd.read_excel(r'C:\Users\Administrator\Desktop\全省已关联传输段的光路表20201117.xlsx')
+fourg = pd.read_excel(r'C:\Users\Administrator\Desktop\全省高铁电路清单（比对光路）20201020.xlsx', sheet_name='4G')
+
+pipei1 = pd.merge(fourg,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei1.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei1.loc[i, '接入下一个传输网元端口A'] = a
+    pipei1.loc[i, '光路A'] = name
+    if ane == zne:
+        pipei1.iloc[i, 13] = '否'
+    else:
+        pipei1.iloc[i, 13] = '是'
+    i = i+1
+
+pipei1 = pipei1.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei1 = pipei1.drop_duplicates(['关联E-NODEB'])
+
+pipei2 = pd.merge(pipei1,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei2.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei2.loc[i, '接入下一个传输网元端口B'] = a
+    pipei2.loc[i, '光路B'] = name
+    if ane == zne:
+        pipei2.iloc[i, 16] = '否'
+    else:
+        pipei2.iloc[i, 16] = '是'
+    i = i+1
+
+i = 0
+for j in pipei2.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    if ane == bne:
+        pipei2 = pipei2.drop(i)
+    i = i+1
+    
+pipei2 = pipei2.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei2 = pipei2.drop_duplicates(['关联E-NODEB'])
+
+pipei3 = pd.merge(pipei2,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei3.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei3.loc[i, '接入下一个传输网元端口C'] = a
+    pipei3.loc[i, '光路C'] = name
+    if ane == zne:
+        pipei3.iloc[i, 19] = '否'
+    else:
+        pipei3.iloc[i, 19] = '是'
+    i = i+1
+
+i = 0
+for j in pipei3.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    if ane == cne or bne == cne:
+        pipei3 = pipei3.drop(i)
+    i = i+1
+    
+pipei3 = pipei3.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei3 = pipei3.drop_duplicates(['关联E-NODEB'])
+
+pipei4 = pd.merge(pipei3,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei4.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei4.loc[i, '接入下一个传输网元端口D'] = a
+    pipei4.loc[i, '光路D'] = name
+    if ane == zne:
+        pipei4.loc[i, 'D是否外部连接'] = '否'
+    else:
+        pipei4.loc[i, 'D是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei4.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    if ane == dne or bne == dne or cne == dne:
+        pipei4 = pipei4.drop(i)
+    i = i+1
+    
+pipei4 = pipei4.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei4 = pipei4.drop_duplicates(['关联E-NODEB'])
+
+pipei5 = pd.merge(pipei4,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei5.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei5.loc[i, '接入下一个传输网元端口E'] = a
+    pipei5.loc[i, '光路E'] = name
+    if ane == zne:
+        pipei5.loc[i, 'E是否外部连接'] = '否'
+    else:
+        pipei5.loc[i, 'E是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei5.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    if ane == ene or bne == ene or cne == ene or dne == ene:
+        pipei5 = pipei5.drop(i)
+    i = i+1
+    
+pipei5 = pipei5.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei5 = pipei5.drop_duplicates(['关联E-NODEB'])
+
+pipei6 = pd.merge(pipei5,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei6.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei6.loc[i, '接入下一个传输网元端口F'] = a
+    pipei6.loc[i, '光路F'] = name
+    if ane == zne:
+        pipei6.loc[i, 'F是否外部连接'] = '否'
+    else:
+        pipei6.loc[i, 'F是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei6.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    fne = getattr(j, '接入下一个传输网元端口F')
+    if ane == fne or bne == fne or cne == fne or dne == fne or ene == fne:
+        pipei6 = pipei6.drop(i)
+    i = i+1
+    
+pipei6 = pipei6.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei6 = pipei6.drop_duplicates(['关联E-NODEB'])
+
+pipei7 = pd.merge(pipei6,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei7.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei7.loc[i, '接入下一个传输网元端口G'] = a
+    pipei7.loc[i, '光路G'] = name
+    if ane == zne:
+        pipei7.loc[i, 'G是否外部连接'] = '否'
+    else:
+        pipei7.loc[i, 'G是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei7.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    fne = getattr(j, '接入下一个传输网元端口F')
+    gne = getattr(j, '接入下一个传输网元端口G')
+    if ane == gne or bne == gne or cne == gne or dne == gne or ene == gne or fne == gne:
+        pipei7 = pipei7.drop(i)
+    i = i+1
+    
+pipei7 = pipei7.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei7 = pipei7.drop_duplicates(['关联E-NODEB'])
+
+pipei8 = pd.merge(pipei7,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei8.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei8.loc[i, '接入下一个传输网元端口H'] = a
+    pipei8.loc[i, '光路H'] = name
+    if ane == zne:
+        pipei8.loc[i, 'H是否外部连接'] = '否'
+    else:
+        pipei8.loc[i, 'H是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei8.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    fne = getattr(j, '接入下一个传输网元端口F')
+    gne = getattr(j, '接入下一个传输网元端口G')
+    hne = getattr(j, '接入下一个传输网元端口H')
+    if ane == hne or bne == hne or cne == hne or dne == hne or ene == hne or fne == hne or gne == hne:
+        pipei8 = pipei8.drop(i)
+    i = i+1
+    
+pipei8 = pipei8.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei8 = pipei8.drop_duplicates(['关联E-NODEB'])
+
+pipei9 = pd.merge(pipei8,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei9.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei9.loc[i, '接入下一个传输网元端口I'] = a
+    pipei9.loc[i, '光路I'] = name
+    if ane == zne:
+        pipei9.loc[i, 'I是否外部连接'] = '否'
+    else:
+        pipei9.loc[i, 'I是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei9.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    fne = getattr(j, '接入下一个传输网元端口F')
+    gne = getattr(j, '接入下一个传输网元端口G')
+    hne = getattr(j, '接入下一个传输网元端口H')
+    ine = getattr(j, '接入下一个传输网元端口I')
+    if ane == ine or bne == ine or cne == ine or dne == ine or ene == ine or fne == ine or gne == ine or hne == ine:
+        pipei9 = pipei9.drop(i)
+    i = i+1
+    
+pipei9 = pipei9.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei9 = pipei9.drop_duplicates(['关联E-NODEB'])
+
+pipei10 = pd.merge(pipei9,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei10.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei10.loc[i, '接入下一个传输网元端口J'] = a
+    pipei10.loc[i, '光路J'] = name
+    if ane == zne:
+        pipei10.loc[i, 'J是否外部连接'] = '否'
+    else:
+        pipei10.loc[i, 'J是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei10.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    fne = getattr(j, '接入下一个传输网元端口F')
+    gne = getattr(j, '接入下一个传输网元端口G')
+    hne = getattr(j, '接入下一个传输网元端口H')
+    ine = getattr(j, '接入下一个传输网元端口I')
+    jne = getattr(j, '接入下一个传输网元端口J')
+    if ane == jne or bne == jne or cne == jne or dne == jne or ene == jne or fne == jne or gne == jne or hne == jne or ine == jne:
+        pipei10 = pipei10.drop(i)
+    i = i+1
+    
+pipei10 = pipei10.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei10 = pipei10.drop_duplicates(['关联E-NODEB'])
+
+pipei11 = pd.merge(pipei10,
+    guanglu.loc[:,[
+    'A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'
+    ]],
+    how='left',    
+    left_on='对端传输网元',
+    right_on='z端网元')
+
+i = 0
+for j in pipei11.itertuples():
+    a = getattr(j, 'a端端口')
+    ane = getattr(j, 'A端站点')
+    zne = getattr(j, 'Z端站点')
+    name = getattr(j, '光路名称')
+    pipei11.loc[i, '接入下一个传输网元端口K'] = a
+    pipei11.loc[i, '光路K'] = name
+    if ane == zne:
+        pipei11.loc[i, 'K是否外部连接'] = '否'
+    else:
+        pipei11.loc[i, 'K是否外部连接'] = '是'
+    i = i+1
+
+i = 0
+for j in pipei11.itertuples():
+    ane = getattr(j, '接入下一个传输网元端口A')
+    bne = getattr(j, '接入下一个传输网元端口B')
+    cne = getattr(j, '接入下一个传输网元端口C')
+    dne = getattr(j, '接入下一个传输网元端口D')
+    ene = getattr(j, '接入下一个传输网元端口E')
+    fne = getattr(j, '接入下一个传输网元端口F')
+    gne = getattr(j, '接入下一个传输网元端口G')
+    hne = getattr(j, '接入下一个传输网元端口H')
+    ine = getattr(j, '接入下一个传输网元端口I')
+    jne = getattr(j, '接入下一个传输网元端口J')
+    kne = getattr(j, '接入下一个传输网元端口K')
+    if ane == kne or bne == kne or cne == kne or dne == kne or ene == kne or fne == kne or gne == kne or hne == kne or ine == kne \
+    or jne == kne:
+        pipei11 = pipei11.drop(i)
+    i = i+1
+    
+pipei11 = pipei11.drop(['A端站点', 'Z端站点', 'a端端口', 'z端网元', '光路名称'], axis=1)
+pipei11 = pipei11.drop_duplicates(['关联E-NODEB'])
+
+pipei1.to_excel(r'C:\Users\Administrator\Desktop\测试1.xlsx', index=None)
+pipei2.to_excel(r'C:\Users\Administrator\Desktop\测试2.xlsx', index=None)
+pipei3.to_excel(r'C:\Users\Administrator\Desktop\测试3.xlsx', index=None)
+pipei4.to_excel(r'C:\Users\Administrator\Desktop\测试4.xlsx', index=None)
+pipei5.to_excel(r'C:\Users\Administrator\Desktop\测试5.xlsx', index=None)
+pipei6.to_excel(r'C:\Users\Administrator\Desktop\测试6.xlsx', index=None)
+pipei7.to_excel(r'C:\Users\Administrator\Desktop\测试7.xlsx', index=None)
+pipei8.to_excel(r'C:\Users\Administrator\Desktop\测试8.xlsx', index=None)
+pipei9.to_excel(r'C:\Users\Administrator\Desktop\测试9.xlsx', index=None)
+pipei10.to_excel(r'C:\Users\Administrator\Desktop\测试10.xlsx', index=None)
+pipei11.to_excel(r'C:\Users\Administrator\Desktop\测试11.xlsx', index=None)
+
+frames = [pipei1, pipei2, pipei3, pipei4, pipei5, pipei6, pipei7, pipei8, pipei9, pipei10, pipei11]
+result = pd.concat(frames, ignore_index=True, sort=False)
+result = result.drop_duplicates(['关联E-NODEB'], keep='last')
+i = 0
+for j in result.itertuples():
+    if pd.isnull(result.iloc[i, 11]):
+        result.iloc[i, 13] = ''
+        result.iloc[i, 16] = ''
+        result.iloc[i, 19] = ''
+        result.iloc[i, 22] = ''
+        result.iloc[i, 25] = ''
+        result.iloc[i, 28] = ''
+        result.iloc[i, 31] = ''
+        result.iloc[i, 34] = ''
+        result.iloc[i, 37] = ''
+        result.iloc[i, 40] = ''
+        result.iloc[i, 43] = ''
+    i = i+1
+    
+result = pd.read_excel(r'C:\Users\Administrator\Desktop\4Ga.xlsx')
+result2 = pd.read_excel(r'C:\Users\Administrator\Desktop\4Gz.xlsx')
+
+result3 = pd.merge(result,
+    result2,
+    how='left',    
+    left_on='关联E-NODEB',
+    right_on='关联E-NODEB')
+    
+result3.to_excel(r'C:\Users\Administrator\Desktop\4G.xlsx', index=None)
